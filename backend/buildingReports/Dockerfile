@@ -1,9 +1,9 @@
-FROM openjdk:8-jdk-alpine as build
+FROM maven:3.8.4-openjdk-17 as build
 COPY . /usr/app
 WORKDIR /usr/app
-RUN chmod +x mvnw && ./mvnw clean package
+RUN mvn -f ./pom.xml clean package
 
-FROM openjdk:8-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 COPY --from=build /usr/app/target/*.jar app.jar
 EXPOSE 8080
 

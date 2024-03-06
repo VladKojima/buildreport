@@ -1,6 +1,31 @@
 services:
   db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./createDB.sql:/docker-entrypoint-initdb.d/create_db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d buildreport"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
 
   back:
+    build: ./backend/buildingReports
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
 
   front:
+    build: ./frontend
+    env_file:
+      - ./frontend/.env
+    ports:
+      - "80:80"
