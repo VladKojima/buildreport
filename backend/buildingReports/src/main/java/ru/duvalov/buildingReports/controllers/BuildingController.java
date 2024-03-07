@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/buildings")
+@RequestMapping("/api/buildings")
 public class BuildingController {
     
     @Autowired

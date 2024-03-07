@@ -16,8 +16,6 @@ services:
     build: ./backend/buildingReports
     env_file:
       - .env
-    ports:
-      - "8080:8080"
     depends_on:
       db:
         condition: service_healthy
@@ -29,3 +27,5 @@ services:
       - ./frontend/.env
     ports:
       - "80:80"
+    depends_on:
+      - back
