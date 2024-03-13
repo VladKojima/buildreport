@@ -29,3 +29,11 @@ services:
       - "80:80"
     depends_on:
       - back
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      - PGADMIN_DEFAULT_PASSWORD=vlad12
+      - PGADMIN_DEFAULT_EMAIL=vlad@ya.ru
+    ports:
+      - "81:80"
