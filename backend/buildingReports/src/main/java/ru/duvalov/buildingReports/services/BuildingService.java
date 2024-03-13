@@ -1,5 +1,7 @@
 package ru.duvalov.buildingReports.services;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +15,16 @@ public class BuildingService {
     @Autowired
     private BuildingRepo bRepo;
 
-    public Building findById(Integer id) {
+    public Building findById(int id) {
         return bRepo.findById(id).orElse(null);
+    }
+
+    public List<Building> getList(int skip){
+        return bRepo.getWithSkip(skip);
+    }
+
+    public List<Building> getList(int limit, int skip){
+        return bRepo.getWithLimitAndSkip(limit, skip);
     }
 
     public Building add(BuildingDTO dto){
