@@ -1,10 +1,17 @@
+import axios from 'axios';
+import { authHeader } from '../Utils/auth';
+
 const urlBase = '/api'
 
-export async function getBuildingWithStarts(str) {
-    if (typeof(str) !== 'string')
+export async function login(user){
+    return (await axios.post(`${urlBase}/auth/login`, user)).data;
+}
+
+export async function getBuildingWithContaining(str) {
+    if (typeof (str) !== 'string')
         throw Error('str isn\'t string');
 
-    return fetch(`${urlBase}/buildings/${str}`).then(res=>res.json());
+    return (await axios.get(`${urlBase}/buildings/find/${str}`)).data;
 }
 
 export async function getBuildingList(limit, skip) {
@@ -27,14 +34,19 @@ export async function getBuildingList(limit, skip) {
     if (params.length !== 0)
         params = `?${params.join('&')}`;
 
-    return fetch(`${urlBase}/buildings/list` + params).then(res=>res.json());
+
+    return (await axios.get(`${urlBase}/buildings/list` + params, {headers: authHeader()})).data;
+}
+
+export async function addBuilding(building){
+    return axios.post(`${urlBase}/buildings/add`, building, {headers: authHeader()});
 }
 
 export async function getTicketById(id) {
     if (isNaN(id))
         throw Error('id is NaN');
 
-    return fetch(`${urlBase}/tickets/${id}`).then(res=>res.json());
+    return (await axios.get(`${urlBase}/tickets/info/${id}`)).data;
 }
 
 export async function getTicketList(limit, skip) {
@@ -57,18 +69,18 @@ export async function getTicketList(limit, skip) {
     if (params.length !== 0)
         params = `?${params.join('&')}`;
 
-    return fetch(`${urlBase}/tickets/list` + params).then(res=>res.json());
+    return (await axios.get(`${urlBase}/tickets/list` + params, {headers: authHeader()})).data;
 }
 
-export async function addTicket(ticket){
+export async function addTicket(ticket) {
 
-    return fetch(`${urlBase}/tickets/add`, {method: "post", headers:{"Content-Type":"application/json"}, body: JSON.stringify(ticket)});
+    return axios.post(`${urlBase}/tickets/add`, ticket);
 }
 
-export async function resolveTicket(id){
-
+export async function resolveTicket(id) {
+    return axios.put(`${urlBase}/tickets/resolve/${id}`, null, {headers: authHeader()});
 }
 
-export async function rejectTicket(id){
-    
+export async function refuseTicket(id) {
+    return axios.put(`${urlBase}/tickets/refuse/${id}`, null, {headers: authHeader()});
 }
