@@ -23,12 +23,10 @@ public class JwtUtils {
   @Value("${duvalov.app.jwtExpirationMs}")
   private int jwtExpirationMs;
 
-  public String generateJwtToken(Authentication authentication) {
-
-    UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+  public String generateJwtToken(String username) {
 
     return Jwts.builder()
-        .setSubject((userPrincipal.getUsername()))
+        .setSubject(username)
         .setIssuedAt(new Date())
         .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
         .signWith(key(), SignatureAlgorithm.HS256)

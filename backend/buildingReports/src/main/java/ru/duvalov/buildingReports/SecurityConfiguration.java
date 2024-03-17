@@ -8,6 +8,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -57,16 +58,15 @@ public class SecurityConfiguration {
 
         http
                 .csrf(c -> c.disable())
-                .authorizeHttpRequests(r -> r.requestMatchers("/api/buildings/*", "/api/buildings/list").permitAll()
-                        .requestMatchers("/api/buildings/add", "/api/tickets/list").authenticated()
+                .authorizeHttpRequests(r -> r
+                        .requestMatchers("/api/buildings/find/*",
+                                "/api/auth/login", "/api/tickets/add", "/api/tickets/info/*")
+                        .permitAll()
+                        .requestMatchers("/api/buildings/list", "/api/tickets/list", "/api/buildings/add", "/api/tickets/resolve/*", "/api/tickets/refuse/*").authenticated()
                         .anyRequest().authenticated())
-                .formLogin(f -> f.loginPage("/?login=form").loginProcessingUrl("/api/auth").failureUrl("/?login=fail")
-                        .defaultSuccessUrl("/?login=success"))
-                .logout(l -> l.logoutUrl("/api/logout").deleteCookies("JSESSIONID"));
-
-        http.authenticationProvider(authenticationProvider());
-
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
