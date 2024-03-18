@@ -39,7 +39,7 @@ export async function getBuildingList(limit, skip) {
 }
 
 export async function addBuilding(building){
-    return axios.post(`${urlBase}/buildings/add`, building, {headers: authHeader()});
+    return (await axios.post(`${urlBase}/buildings/add`, building, {headers: authHeader()})).data;
 }
 
 export async function getTicketById(id) {
@@ -74,7 +74,7 @@ export async function getTicketList(limit, skip) {
 
 export async function addTicket(ticket) {
 
-    return axios.post(`${urlBase}/tickets/add`, ticket);
+    return (await axios.post(`${urlBase}/tickets/add`, ticket)).data;
 }
 
 export async function resolveTicket(id) {
