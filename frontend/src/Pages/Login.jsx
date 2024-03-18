@@ -1,45 +1,71 @@
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
-import { useState } from 'react'
+import Typography from '@mui/material/Typography';
+import SnackBar from '@mui/material/Snackbar';
 
-export default function Login() {
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { login } from '../API/buildingsAPI';
+import { saveToken } from '../Utils/auth';
+
+export default function Login({ setIsManager }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    function sub(e) {
-        e.preventDefault();
+    const nav = useNavigate();
+
+    const [snackOpen, setSnackOpen] = useState(false);
+
+    function handleClose(_, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackOpen(false);
     }
 
-    return <div>
+    async function sub(e) {
+        e.preventDefault();
+        try {
+            saveToken(await login({ username, password }));
+            setIsManager(true);
+            nav("/");
+        }
+        catch (err) {
+            setSnackOpen(true);
+        }
+    }
 
-        <Grid
-            container
-            spacing={0}
-            direction="column"
-            alignItems="center"
-            justifyContent="center"
-            sx={{ minHeight: '100vh' }}
-        >
-            <Grid item>
-                <form onSubmit={sub}>
-                    <Stack>
-                        <TextField value={username}
-                            onChange={({ target: { value } }) => setUsername(value)}
-                            placeholder='Username'
-                            required
-                        />
-                        <TextField value={password}
-                            onChange={({ target: { value } }) => setPassword(value)}
-                            placeholder='Password'
-                            required
-                        />
-                        <Button type='submit' variant='contained'>Submit</Button>
-                    </Stack>
-                </form>
-            </Grid>
-        </Grid>
+    return <Container sx={{ marginTop: '3%' }}>
 
-    </div>
+        <SnackBar
+            open={snackOpen}
+            autoHideDuration={3000}
+            onClose={handleClose}
+            message='Some is broken, try again'
+        />
+
+        <form onSubmit={sub}>
+            <Stack>
+                <Typography align='center'>Sign in</Typography>
+                <TextField value={username}
+                    onChange={({ target: { value } }) => setUsername(value)}
+                    label='Username'
+                    required
+                    margin='dense'
+                />
+                <TextField value={password}
+                    onChange={({ target: { value } }) => setPassword(value)}
+                    label='Password'
+                    required
+                    margin='dense'
+                />
+                <Button type='submit' variant='contained'>Submit</Button>
+            </Stack>
+        </form>
+
+    </Container>
 }

@@ -1,22 +1,33 @@
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
-import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography';
 import AutoComplete from '@mui/material/Autocomplete';
-import { useRef, useState } from 'react'
+import SnackBar from '@mui/material/Snackbar';
 
-import { getBuildingWithStarts } from '../API/buildingsAPI';
+import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { addTicket, getBuildingWithContaining } from '../API/buildingsAPI';
 
 export default function Ticket() {
 
-    const [data, setData] = useState({ object: null, title: '', desc: '', email: '' });
-
-    function sub(e) {
-        e.preventDefault();
-    }
-
     const [objects, setObjects] = useState([]);
+
+    const [selectedId, setSelectedId] = useState(null);
+
+    const nav = useNavigate();
+
+    const [snackOpen, setSnackOpen] = useState(false);
+
+    function handleClose(_, reason) {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setSnackOpen(false);
+    }
 
     const timer = useRef();
     const field = useRef();
@@ -28,54 +39,72 @@ export default function Ticket() {
 
         timer.current = setTimeout(() => {
             if (value !== field.current && value)
-                getBuildingWithStarts(value).then(data=>setObjects(data
-                    .map(obj=>{return {label: obj.title, id: obj.id}})
-            ));
+                getBuildingWithContaining(value).then(data => setObjects(data
+                    .map(obj => { return { label: obj.title, id: obj.id } })
+                )).catch(() => setSnackOpen(true));
             field.current = value;
         }, INPUT_TIMEOUT);
     }
 
-    return <div>
-        <Grid
-            container
-            spacing={0}
-            direction="column"
-            alignItems="center"
-            justifyContent="center"
-            sx={{ minHeight: '100vh' }}
-        >
-            <Grid item>
-                <form onSubmit={sub}>
-                    <Stack>
-                        <Typography align='center'>Ticket</Typography>
-                        <AutoComplete options={objects}
-                            renderInput={params => <TextField {...params} label="Begin enter title" />}
-                            onInputChange={inputStop}
-                            noOptionsText="No objects found"
-                        />
-                        <TextField value={data.email}
-                            onChange={({ target: { value } }) => setData({ ...data, email: value })}
-                            placeholder='Email'
-                            required
-                            margin='dense'
-                        />
-                        <TextField value={data.title}
-                            onChange={({ target: { value } }) => setData({ ...data, title: value })}
-                            placeholder='Title'
-                            required
-                            margin='dense'
-                        />
-                        <TextField value={data.desc}
-                            onChange={({ target: { value } }) => setData({ ...data, desc: value })}
-                            placeholder='Desc'
-                            required
-                            margin='dense'
-                            multiline
-                        />
-                        <Button type='submit' variant='contained'>Submit</Button>
-                    </Stack>
-                </form>
-            </Grid>
-        </Grid>
-    </div>
+    async function sub(e) {
+        e.preventDefault();
+        try {
+            await addTicket({ ...Object.fromEntries(new FormData(e.target)), buildingId: selectedId });
+            nav('/');
+        }
+        catch (err) {
+            setSnackOpen(true);
+        }
+    }
+
+    return <Container>
+
+        <SnackBar
+            open={snackOpen}
+            autoHideDuration={3000}
+            onClose={handleClose}
+            message='Some is broken, try again'
+        />
+
+        <form onSubmit={sub} sx={{ marginTop: '3%' }}>
+            <Stack>
+                <Typography align='center'>Ticket</Typography>
+                <AutoComplete
+                    options={objects}
+                    renderInput={params => <TextField {...params}
+                        placeholder="Begin enter title"
+                        label="Object" required
+                    />}
+                    onInputChange={inputStop}
+                    noOptionsText="No objects found"
+                    onChange={(_, value) => setSelectedId(value.id)}
+                />
+                <TextField
+                    label='Email'
+                    type='email'
+                    required
+                    margin='dense'
+                    name='email'
+                />
+                <TextField
+                    label='Title'
+                    required
+                    margin='dense'
+                    name='title'
+                />
+                <TextField
+                    label='Desc'
+                    required
+                    margin='dense'
+                    multiline
+                    name='description'
+                />
+                <Button
+                    type='submit'
+                    variant='contained'
+                >Submit</Button>
+            </Stack>
+        </form>
+    </Container>
+
 }
