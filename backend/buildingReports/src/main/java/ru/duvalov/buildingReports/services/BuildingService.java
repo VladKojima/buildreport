@@ -19,6 +19,10 @@ public class BuildingService {
         return bRepo.findById(id).orElse(null);
     }
 
+    public List<Building> findByTitleContaining(String str){
+        return bRepo.findByTitleContainingIgnoreCase(str);
+    }
+
     public List<Building> getList(int skip){
         return bRepo.getWithSkip(skip);
     }

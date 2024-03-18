@@ -11,10 +11,10 @@ import ru.duvalov.buildingReports.models.Ticket;
 
 public interface TicketRepo extends JpaRepository<Ticket, Integer> {
 
-    @Query(value = "select * from tickets offset :skip", nativeQuery = true)
+    @Query(value = "select * from tickets order by date desc offset :skip", nativeQuery = true)
     List<Ticket> getWithSkip(@Param("skip") int skip);
     
-    @Query(value = "select * from tickets limit :limit offset :skip", nativeQuery = true)
+    @Query(value = "select * from tickets order by date desc limit :limit offset :skip", nativeQuery = true)
     List<Ticket> getWithLimitAndSkip(@Param("limit") int limit, @Param("skip") int skip);
     
     int countByBuilding(Building building);

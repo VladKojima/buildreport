@@ -29,9 +29,9 @@ public class BuildingController {
     private BuildingService bService;
     @Autowired TicketService tService;
 
-    @GetMapping("/{id}")
-    public Building getById(@PathVariable Integer id) {
-        return bService.findById(id);
+    @GetMapping("/find/{str}")
+    public List<Building> getWithStarts(@PathVariable String str) {
+        return bService.findByTitleContaining(str);
     }
 
     @GetMapping("/list")

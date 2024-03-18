@@ -17,4 +17,5 @@ public interface BuildingRepo extends JpaRepository<Building, Integer>{
     @Query(value = "select * from buildings limit :limit offset :skip", nativeQuery = true)
     List<Building> getWithLimitAndSkip(@Param("limit") int limit, @Param("skip") int skip);
     
+    public List<Building> findByTitleContainingIgnoreCase(String title);
 }
