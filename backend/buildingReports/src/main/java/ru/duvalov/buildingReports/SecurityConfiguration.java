@@ -62,8 +62,8 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/buildings/find/*",
                                 "/api/auth/login", "/api/tickets/add", "/api/tickets/info/*")
                         .permitAll()
-                        .requestMatchers("/api/buildings/list", "/api/tickets/list", "/api/buildings/add", "/api/tickets/resolve/*", "/api/tickets/refuse/*").authenticated()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/api/buildings/list", "/api/tickets/list", "/api/buildings/add", "/api/tickets/resolve/*", "/api/tickets/refuse/*", "/api/buildings/delete/*", "/api/buildings/edit/*").authenticated()
+                        .anyRequest().denyAll())
                 .sessionManagement(m -> m.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
