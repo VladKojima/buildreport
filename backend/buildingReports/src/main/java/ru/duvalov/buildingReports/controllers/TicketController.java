@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +27,11 @@ public class TicketController {
     private TicketService tService;
 
     @GetMapping("/info/{id}")
-    public Ticket getMethodName(@PathVariable Integer id) {
-        return tService.findById(id);
+    public ResponseEntity<Ticket> getMethodName(@PathVariable Integer id) {
+        Ticket t = tService.findById(id);
+        if (t == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(tService.findById(id));
     }
 
     @GetMapping("/list")

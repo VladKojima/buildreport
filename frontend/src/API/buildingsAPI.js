@@ -3,7 +3,7 @@ import { authHeader } from '../Utils/auth';
 
 const urlBase = '/api'
 
-export async function login(user){
+export async function login(user) {
     return (await axios.post(`${urlBase}/auth/login`, user)).data;
 }
 
@@ -35,11 +35,19 @@ export async function getBuildingList(limit, skip) {
         params = `?${params.join('&')}`;
 
 
-    return (await axios.get(`${urlBase}/buildings/list` + params, {headers: authHeader()})).data;
+    return (await axios.get(`${urlBase}/buildings/list` + params, { headers: authHeader() })).data;
 }
 
-export async function addBuilding(building){
-    return (await axios.post(`${urlBase}/buildings/add`, building, {headers: authHeader()})).data;
+export async function addBuilding(building) {
+    return (await axios.post(`${urlBase}/buildings/add`, building, { headers: authHeader() })).data;
+}
+
+export async function editBuilding({ id, ...building }) {
+    return axios.put(`${urlBase}/buildings/edit/${id}`, building, { headers: authHeader() });
+}
+
+export async function removeBuilding(id) {
+    return axios.delete(`${urlBase}/buildings/delete/${id}`, { headers: authHeader() });
 }
 
 export async function getTicketById(id) {
@@ -69,7 +77,7 @@ export async function getTicketList(limit, skip) {
     if (params.length !== 0)
         params = `?${params.join('&')}`;
 
-    return (await axios.get(`${urlBase}/tickets/list` + params, {headers: authHeader()})).data;
+    return (await axios.get(`${urlBase}/tickets/list` + params, { headers: authHeader() })).data;
 }
 
 export async function addTicket(ticket) {
@@ -78,9 +86,9 @@ export async function addTicket(ticket) {
 }
 
 export async function resolveTicket(id) {
-    return axios.put(`${urlBase}/tickets/resolve/${id}`, null, {headers: authHeader()});
+    return axios.put(`${urlBase}/tickets/resolve/${id}`, null, { headers: authHeader() });
 }
 
 export async function refuseTicket(id) {
-    return axios.put(`${urlBase}/tickets/refuse/${id}`, null, {headers: authHeader()});
+    return axios.put(`${urlBase}/tickets/refuse/${id}`, null, { headers: authHeader() });
 }

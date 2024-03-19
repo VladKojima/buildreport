@@ -2,6 +2,9 @@ package ru.duvalov.buildingReports.models;
 
 import java.util.Date;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,6 +40,7 @@ public class Ticket {
     @Column(nullable = false)
     private Statuses status;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(nullable = false)
     private Building building;
 }

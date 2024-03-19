@@ -19,7 +19,7 @@ import SnackBar from '@mui/material/Snackbar';
 
 import { useState, useEffect } from 'react';
 
-import { addBuilding, getBuildingList } from '../API/buildingsAPI';
+import { addBuilding, getBuildingList, editBuilding, removeBuilding } from '../API/buildingsAPI';
 import useLoading from '../Hooks/useLoading';
 import getAlert from '../Utils/errorAlerts';
 
@@ -36,6 +36,10 @@ export default function BuildingList() {
     const [snackCode, setSnackCode] = useState();
 
     const [lockForm, setLockForm] = useState(false);
+
+    const [formFields, setFormFields] = useState({ id: null, title: '', address: '', registerDate: '' })
+
+    const [editMode, setEditMode] = useState(false);
 
     function handleClose(_, reason) {
         if (reason === 'clickaway') {
@@ -56,7 +60,7 @@ export default function BuildingList() {
         setLockForm(true);
 
         try {
-            let res = await addBuilding(Object.fromEntries(new FormData(e.target)));
+            let res = await addBuilding(formFields);
 
             setOpenD(false);
 
@@ -68,6 +72,50 @@ export default function BuildingList() {
         }
         finally {
             setLockForm(false);
+        }
+    }
+
+    async function openEdit(building) {
+        setFormFields({...building, registerDate: new Date(building.registerDate).toLocaleDateString()});
+        setEditMode(true);
+        setOpenD(true);
+    }
+
+    async function edit(e) {
+        e.preventDefault();
+
+        setLockForm(true);
+
+        try {
+            await editBuilding(formFields);
+
+            setOpenD(false);
+
+            setData(data.map(item => {
+                if (item.id !== formFields.id)
+                    return item;
+
+                return formFields;
+            }))
+        }
+        catch (err) {
+            setSnackCode(err.response?.status)
+            setSnackOpen(true);
+        }
+        finally {
+            setLockForm(false);
+        }
+    }
+
+    async function remove(id) {
+        try {
+            await removeBuilding(id);
+
+            setData(data.filter(item => item.id !== id));
+        }
+        catch (err) {
+            setSnackCode(err.response?.status)
+            setSnackOpen(true);
         }
     }
 
@@ -90,7 +138,7 @@ export default function BuildingList() {
                 <TableHead>
                     <TableRow>
                         {
-                            ['ID', 'Title', 'Address', 'Register date', 'Tickets\' count']
+                            ['ID', 'Title', 'Address', 'Register date', 'Tickets\' count', '']
                                 .map(title => <TableCell style={{ fontWeight: "bold" }}>{title}</TableCell>)
                         }
                     </TableRow>
@@ -104,9 +152,23 @@ export default function BuildingList() {
                                 item.title,
                                 item.address,
                                 new Date(item.registerDate).toLocaleDateString(),
-                                item.ticketCount
+                                item.ticketCount,
                             ].map(value => <TableCell>{value}</TableCell>)
                         }
+                        <TableCell>
+                            <Button
+                                variant='outlined'
+                                color='primary'
+                                onClick={() => openEdit(item)}
+                            >Edit</Button>
+
+                            <Button
+                                variant='outlined'
+                                color='secondary'
+                                sx={{ marginLeft: 3 }}
+                                onClick={() => remove(item.id)}
+                            >Delete</Button>
+                        </TableCell>
                     </TableRow>)}
                 </TableBody>
             </Table>
@@ -132,28 +194,33 @@ export default function BuildingList() {
             >
                 <DialogTitle>Add building</DialogTitle>
                 <DialogContent>
-                    <form onSubmit={add}>
+                    <form onSubmit={editMode ? edit : add}>
                         <Stack marginTop={1}>
                             <TextField
                                 label='Title'
                                 margin='dense'
                                 required
-                                name='title'
+
+                                value={formFields.title}
+                                onChange={({ target: { value } }) => setFormFields({ ...formFields, title: value })}
                             />
                             <TextField
                                 label="Address"
                                 margin='dense'
                                 required
-                                name='address'
+
+                                value={formFields.address}
+                                onChange={({ target: { value } }) => setFormFields({ ...formFields, address: value })}
                             />
                             <TextField
 
                                 type='date'
                                 margin='dense'
-                                aria-placeholder=''
                                 label="Register date"
                                 required
-                                name='registerDate'
+
+                                value={formFields.registerDate}
+                                onChange={({ target: { value } }) => setFormFields({ ...formFields, registerDate: value })}
                             />
 
                             <Button

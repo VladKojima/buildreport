@@ -34,5 +34,12 @@ public class BuildingService {
     public Building add(BuildingDTO dto){
         return bRepo.save(new Building(null, dto.title, dto.address, dto.registerDate));
     }
+
+    public void edit(Building b){
+        bRepo.save(b);
+    }
     
+    public void delete(int id){
+        bRepo.deleteById(id);
+    }
 }
