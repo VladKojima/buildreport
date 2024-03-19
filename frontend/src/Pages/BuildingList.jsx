@@ -21,6 +21,7 @@ import { useState, useEffect } from 'react';
 
 import { addBuilding, getBuildingList } from '../API/buildingsAPI';
 import useLoading from '../Hooks/useLoading';
+import getAlert from '../Utils/errorAlerts';
 
 
 export default function BuildingList() {
@@ -32,6 +33,9 @@ export default function BuildingList() {
     const [openD, setOpenD] = useState(false);
 
     const [snackOpen, setSnackOpen] = useState(false);
+    const [snackCode, setSnackCode] = useState();
+
+    const [lockForm, setLockForm] = useState(false);
 
     function handleClose(_, reason) {
         if (reason === 'clickaway') {
@@ -49,6 +53,8 @@ export default function BuildingList() {
     async function add(e) {
         e.preventDefault();
 
+        setLockForm(true);
+
         try {
             let res = await addBuilding(Object.fromEntries(new FormData(e.target)));
 
@@ -57,7 +63,11 @@ export default function BuildingList() {
             setData([...data, { ...res, ticketCount: 0 }])
         }
         catch (err) {
+            setSnackCode(err.response?.status)
             setSnackOpen(true);
+        }
+        finally {
+            setLockForm(false);
         }
     }
 
@@ -72,7 +82,7 @@ export default function BuildingList() {
             open={snackOpen}
             autoHideDuration={3000}
             onClose={handleClose}
-            message='Some is broken, try again'
+            message={getAlert(snackCode)}
         />
 
         {!isLoading && !error && <>
@@ -115,7 +125,10 @@ export default function BuildingList() {
             </Fab>
             <Dialog
                 open={openD}
-                onClose={() => setOpenD(false)}
+                onClose={() => {
+                    if (!lockForm)
+                        setOpenD(false);
+                }}
             >
                 <DialogTitle>Add building</DialogTitle>
                 <DialogContent>
@@ -146,6 +159,7 @@ export default function BuildingList() {
                             <Button
                                 variant='contained'
                                 type='submit'
+                                disabled={lockForm}
                             >Send</Button>
                         </Stack>
                     </form>
@@ -155,7 +169,7 @@ export default function BuildingList() {
 
         {!isLoading && error && <Alert severity='error' variant='filled' sx={{ marginTop: '5px' }}>
             <AlertTitle>Error</AlertTitle>
-            Some is broken, try again later
+            {getAlert(error.response?.status)}
         </Alert>}
     </div>
 }

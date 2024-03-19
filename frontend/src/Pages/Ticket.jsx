@@ -10,6 +10,7 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { addTicket, getBuildingWithContaining } from '../API/buildingsAPI';
+import getAlert from '../Utils/errorAlerts';
 
 export default function Ticket() {
 
@@ -20,6 +21,7 @@ export default function Ticket() {
     const nav = useNavigate();
 
     const [snackOpen, setSnackOpen] = useState(false);
+    const [snackCode, setSnackCode] = useState();
 
     function handleClose(_, reason) {
         if (reason === 'clickaway') {
@@ -41,7 +43,11 @@ export default function Ticket() {
             if (value !== field.current && value)
                 getBuildingWithContaining(value).then(data => setObjects(data
                     .map(obj => { return { label: obj.title, id: obj.id } })
-                )).catch(() => setSnackOpen(true));
+                )).catch((err) => {
+                    setSnackCode(err.response?.status);
+                    setSnackOpen(true);
+                });
+
             field.current = value;
         }, INPUT_TIMEOUT);
     }
@@ -53,6 +59,7 @@ export default function Ticket() {
             nav(`/ticket/${res.id}`);
         }
         catch (err) {
+            setSnackCode(err.response?.status);
             setSnackOpen(true);
         }
     }
@@ -63,7 +70,7 @@ export default function Ticket() {
             open={snackOpen}
             autoHideDuration={3000}
             onClose={handleClose}
-            message='Some is broken, try again'
+            message={getAlert(snackCode)}
         />
 
         <form onSubmit={sub} sx={{ marginTop: '3%' }}>

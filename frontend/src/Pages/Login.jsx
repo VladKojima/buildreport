@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { login } from '../API/buildingsAPI';
 import { saveToken } from '../Utils/auth';
+import getAlert from '../Utils/errorAlerts';
 
 export default function Login({ setIsManager }) {
     const [username, setUsername] = useState('');
@@ -18,6 +19,7 @@ export default function Login({ setIsManager }) {
     const nav = useNavigate();
 
     const [snackOpen, setSnackOpen] = useState(false);
+    const [snackCode, setSnackCode] = useState();
 
     function handleClose(_, reason) {
         if (reason === 'clickaway') {
@@ -35,6 +37,7 @@ export default function Login({ setIsManager }) {
             nav("/");
         }
         catch (err) {
+            setSnackCode(err.response?.status);
             setSnackOpen(true);
         }
     }
@@ -45,7 +48,7 @@ export default function Login({ setIsManager }) {
             open={snackOpen}
             autoHideDuration={3000}
             onClose={handleClose}
-            message='Some is broken, try again'
+            message={getAlert(snackCode)}
         />
 
         <form onSubmit={sub}>

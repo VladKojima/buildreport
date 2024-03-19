@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 
 import useLoading from '../Hooks/useLoading';
 import { getTicketList, refuseTicket, resolveTicket } from '../API/buildingsAPI';
+import getAlert from '../Utils/errorAlerts';
 
 export default function TicketList() {
     const [data, setData] = useState([]);
@@ -26,6 +27,7 @@ export default function TicketList() {
     }, [isLoading]);
 
     const [snackOpen, setSnackOpen] = useState(false);
+    const [snackCode, setSnackCode] = useState();
 
     function handleClose(_, reason) {
         if (reason === 'clickaway') {
@@ -63,6 +65,7 @@ export default function TicketList() {
             }))
         }
         catch (err) {
+            setSnackCode(err.response?.status);
             setSnackOpen(true);
         }
     }
@@ -79,7 +82,7 @@ export default function TicketList() {
             open={snackOpen}
             autoHideDuration={3000}
             onClose={handleClose}
-            message='Some is broken, try again'
+            message={getAlert(snackCode)}
         />
 
         {!isLoading && !error && <Table>
@@ -128,7 +131,7 @@ export default function TicketList() {
 
         {!isLoading && error && <Alert severity='error' variant='filled' sx={{ marginTop: '5px' }}>
             <AlertTitle>Error</AlertTitle>
-            Some is broken, try again later
+            {getAlert(error.response?.status)}
         </Alert>}
     </div>
 
