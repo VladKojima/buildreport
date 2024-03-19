@@ -49,8 +49,8 @@ export default function Ticket() {
     async function sub(e) {
         e.preventDefault();
         try {
-            await addTicket({ ...Object.fromEntries(new FormData(e.target)), buildingId: selectedId });
-            nav('/');
+            let res = await addTicket({ ...Object.fromEntries(new FormData(e.target)), buildingId: selectedId });
+            nav(`/ticket/${res.id}`);
         }
         catch (err) {
             setSnackOpen(true);
