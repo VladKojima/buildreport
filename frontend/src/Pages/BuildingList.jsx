@@ -76,7 +76,7 @@ export default function BuildingList() {
     }
 
     async function openEdit(building) {
-        setFormFields({...building, registerDate: new Date(building.registerDate).toLocaleDateString()});
+        setFormFields({ ...building, registerDate: new Date(building.registerDate).toISOString().split('T')[0] });
         setEditMode(true);
         setOpenD(true);
     }
