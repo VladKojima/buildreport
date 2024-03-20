@@ -14,6 +14,9 @@ services:
 
   back:
     build: ./backend/buildingReports
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
     env_file:
       - .env
     depends_on:
@@ -23,17 +26,7 @@ services:
 
   front:
     build: ./frontend
-    env_file:
-      - ./frontend/.env
     ports:
       - "80:80"
     depends_on:
       - back
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    environment:
-      - PGADMIN_DEFAULT_PASSWORD=vlad12
-      - PGADMIN_DEFAULT_EMAIL=vlad@ya.ru
-    ports:
-      - "81:80"
