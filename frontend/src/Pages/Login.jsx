@@ -65,6 +65,7 @@ export default function Login({ setIsManager }) {
                     label='Password'
                     required
                     margin='dense'
+                    type='password'
                 />
                 <Button type='submit' variant='contained'>Submit</Button>
             </Stack>
