@@ -8,11 +8,11 @@ import { useState } from 'react';
 
 import Bar from '../Components/Bar';
 
-export default function Manager({ setIsManager }) {
+export default function Manager({ setIsManager, setSnackCode, setSnackOpen }) {
 
     const [selectedTab, setSelectedTab] = useState(0);
 
-    const tabs = [<BuildingList />, <TicketList />]
+    const tabs = [<BuildingList {...{setSnackCode, setSnackOpen}}/>, <TicketList {...{setSnackCode, setSnackOpen}} />]
 
     return <Container sx={{'min-width': '100%'}}>
         <Bar setIsManager={setIsManager} />

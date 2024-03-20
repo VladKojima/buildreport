@@ -15,7 +15,6 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import SnackBar from '@mui/material/Snackbar';
 
 import { useState, useEffect } from 'react';
 
@@ -24,7 +23,7 @@ import useLoading from '../Hooks/useLoading';
 import getAlert from '../Utils/errorAlerts';
 
 
-export default function BuildingList() {
+export default function BuildingList({ setSnackOpen, setSnackCode }) {
 
     const { isLoading, res, error } = useLoading(getBuildingList);
 
@@ -32,22 +31,11 @@ export default function BuildingList() {
 
     const [openD, setOpenD] = useState(false);
 
-    const [snackOpen, setSnackOpen] = useState(false);
-    const [snackCode, setSnackCode] = useState();
-
     const [lockForm, setLockForm] = useState(false);
 
     const [formFields, setFormFields] = useState({ id: null, title: '', address: '', registerDate: '' })
 
     const [editMode, setEditMode] = useState(false);
-
-    function handleClose(_, reason) {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackOpen(false);
-    }
 
     useEffect(() => {
         if ((!isLoading && !error))
@@ -125,13 +113,6 @@ export default function BuildingList() {
         >
             <CircularProgress color='primary' />
         </Backdrop>
-
-        <SnackBar
-            open={snackOpen}
-            autoHideDuration={3000}
-            onClose={handleClose}
-            message={getAlert(snackCode)}
-        />
 
         {!isLoading && !error && <>
             <Table>

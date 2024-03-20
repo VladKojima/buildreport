@@ -8,7 +8,6 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import SnackBar from '@mui/material/Snackbar';
 
 import { useEffect, useState } from 'react';
 
@@ -16,7 +15,7 @@ import useLoading from '../Hooks/useLoading';
 import { getTicketList, refuseTicket, resolveTicket } from '../API/buildingsAPI';
 import getAlert from '../Utils/errorAlerts';
 
-export default function TicketList() {
+export default function TicketList({ setSnackCode, setSnackOpen }) {
     const [data, setData] = useState([]);
 
     const { isLoading, res, error } = useLoading(getTicketList);
@@ -25,17 +24,6 @@ export default function TicketList() {
         if ((!isLoading && !error))
             setData(res);
     }, [isLoading]);
-
-    const [snackOpen, setSnackOpen] = useState(false);
-    const [snackCode, setSnackCode] = useState();
-
-    function handleClose(_, reason) {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackOpen(false);
-    }
 
     async function resolve(id) {
         try {
@@ -77,13 +65,6 @@ export default function TicketList() {
         >
             <CircularProgress color='primary' />
         </Backdrop>
-
-        <SnackBar
-            open={snackOpen}
-            autoHideDuration={3000}
-            onClose={handleClose}
-            message={getAlert(snackCode)}
-        />
 
         {!isLoading && !error && <Table>
             <TableHead>

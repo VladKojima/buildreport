@@ -4,7 +4,6 @@ import Container from '@mui/material/Container'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography';
 import AutoComplete from '@mui/material/Autocomplete';
-import SnackBar from '@mui/material/Snackbar';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -14,9 +13,8 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { addTicket, getBuildingWithContaining } from '../API/buildingsAPI';
-import getAlert from '../Utils/errorAlerts';
 
-export default function Ticket() {
+export default function Ticket({setSnackCode, setSnackOpen}) {
 
     const [objects, setObjects] = useState([]);
 
@@ -24,18 +22,7 @@ export default function Ticket() {
 
     const nav = useNavigate();
 
-    const [snackOpen, setSnackOpen] = useState(false);
-    const [snackCode, setSnackCode] = useState();
-
     const [id, setId] = useState();
-
-    function handleClose(_, reason) {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackOpen(false);
-    }
 
     const timer = useRef();
     const field = useRef();
@@ -71,14 +58,6 @@ export default function Ticket() {
     }
 
     return <Container>
-
-        <SnackBar
-            open={snackOpen}
-            autoHideDuration={3000}
-            onClose={handleClose}
-            message={getAlert(snackCode)}
-        />
-
         <form onSubmit={sub} sx={{ marginTop: '3%' }}>
             <Stack>
                 <Typography align='center'>Ticket</Typography>
@@ -126,7 +105,7 @@ export default function Ticket() {
 
                 <Typography>
                     Your ticket can be accessed by link: <Link
-                        sx={{cursor: 'pointer'}}
+                        sx={{ cursor: 'pointer' }}
                         onClick={({ target }) => {
                             navigator.clipboard.writeText(target.textContent);
                         }}
